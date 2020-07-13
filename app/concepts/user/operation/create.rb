@@ -13,6 +13,7 @@ module User::Operation
     end
 
     def generate_auth_token(ctx, params:,**)
+      p "Generating JWT Token..."
       ctx[:token] = {
         auth_token: JsonWebToken.encode({email: params[:email]}),
         email: params[:email],

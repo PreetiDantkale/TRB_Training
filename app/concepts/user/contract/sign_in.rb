@@ -1,8 +1,8 @@
 module User::Contract
   class SignIn < Reform::Form
     property :email
-    property :password_digest
+    property :password
 
-    validates :email, :password_digest, presence: true
+    validates :email, :password, presence: true
   end
 end

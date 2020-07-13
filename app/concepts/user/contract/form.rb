@@ -3,8 +3,9 @@ module User::Contract
     property :name
     property :age
     property :email
+    property :password
 
-    validates :name, :age, :email, presence: true
+    validates :name, :age, :email, :password, presence: true
     validates_uniqueness_of :email
   end
 end

@@ -8,10 +8,12 @@ module User::Operation
     fail :set_error_response
 
     def authenticate_user(ctx, params:, **)
-      User.where(email: params[:email], password_digest: params[:password_digest]).exists?
+      p "Authenticating...."
+      User.where(email: params[:email], password: params[:password]).exists?
     end
 
     def issue_token(ctx, params:, **)
+      p "Generating Token..."
       ctx[:token] = {
         auth_token: JsonWebToken.encode({email: params[:email]}),
         email: params[:email],
@@ -21,8 +23,9 @@ module User::Operation
     end
 
     def set_error_response(ctx, params:, **)
-      password = User.where(email: params[:email]).first&.password_digest
-      ctx[:errors] = {password: 'Invalid'} if password != params[:password_digest]
+      p "Invalid Credentials"
+      password = User.where(email: params[:email]).first&.password
+      ctx[:errors] = {password: 'Invalid'} if password != params[:password]
     end
   end
 end

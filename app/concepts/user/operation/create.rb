@@ -1,31 +1,14 @@
 module User::Operation
   class Create < Trailblazer::Operation
+    step Model(User, :new)
+    step Contract::Build(constant: User::Contract::Form )
+    step Contract::Validate(key: :user)
+    # step Contract::Persist()
+    # fail :set_error_response
+    #
+    # def set_error_response(ctx, **)
+    #   ctx[:errors] = ctx[:"contract.default"].errors.full_messages
+    # end
 
-    step :create_user
-    step :address_present?, Output(:failure) => Id(:send_email)
-    step :create_address
-
-    fail :send_email
-    step :set_response_data
-
-    def create_user(ctx, **)
-      ctx[:user] = User.create(name: 'Preeti')
-    end
-
-    def address_present?(ctx, **)
-      false
-    end
-
-    def create_address(ctx, **)
-      p "Creating Address...."
-    end
-
-    def send_email(ctx, **)
-      p "Mail sent to..."
-    end
-
-    def set_response_data(ctx, **)
-      p 'User created..'
-    end
   end
 end

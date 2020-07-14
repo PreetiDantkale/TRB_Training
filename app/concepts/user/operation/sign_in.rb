@@ -1,6 +1,6 @@
 module User::Operation
   class SignIn < Trailblazer::Operation
-    step Model(User, :new)
+    step Model(User, :find_by, :email)
     step Contract::Build(constant: User::Contract::SignIn )
     step Contract::Validate()
     step :authenticate_user
@@ -9,23 +9,24 @@ module User::Operation
 
     def authenticate_user(ctx, params:, **)
       p "Authenticating...."
-      User.where(email: params[:email], password: params[:password]).exists?
+      ctx[:model].password == params[:password]
     end
 
     def issue_token(ctx, params:, **)
       p "Generating Token..."
+      token = JWT.encode(params[:email], params[:password], 'none')
+      p "Your Token #{token}"
       ctx[:token] = {
-        auth_token: JsonWebToken.encode({email: params[:email]}),
+        token: token,
         email: params[:email],
-        name: User.find_by(email: params[:email]).name,
-        age: User.find_by(age: params[:age]).age
+        name: User.find_by(email: params[:email])&.name,
+        age: User.find_by(age: params[:age])&.age
       }
     end
 
     def set_error_response(ctx, params:, **)
       p "Invalid Credentials"
-      password = User.where(email: params[:email]).first&.password
-      ctx[:errors] = {password: 'Invalid'} if password != params[:password]
+      ctx[:errors] = {password: 'Invalid'}
     end
   end
 end

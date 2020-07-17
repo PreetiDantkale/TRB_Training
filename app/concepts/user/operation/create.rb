@@ -1,8 +1,10 @@
 module User::Operation
   class Create < Trailblazer::Operation
-    step Model(User, :new)
-    step Contract::Build(constant: User::Contract::Form )
-    step Contract::Validate()
+
+    # step Model(User, :new)
+    # step Contract::Build(constant: User::Contract::Form )
+    step Subprocess(User::Operation::New)
+    step Contract::Validate(key: :user)
     step Contract::Persist()
     fail :set_error_response
     step :generate_token

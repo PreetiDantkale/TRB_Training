@@ -1,0 +1,5 @@
+= link_to "New User", new_user_path
+%br
+- @model.each do |user|
+   = user.email
+   %br
